@@ -141,6 +141,42 @@ local function resolve_journal_name(explicit_name, journals, on_done)
   end)
 end
 
+local function current_buffer_anchor()
+  local path = vim.api.nvim_buf_get_name(0)
+  if path == '' then
+    return nil
+  end
+
+  local stem = vim.fn.fnamemodify(path, ':t:r')
+  if stem == '' then
+    return nil
+  end
+
+  if stem:match('^%d%d%d%d%-%d%d%-%d%d$') then
+    return stem
+  end
+
+  if stem:match('^%d%d%d%d%-%d%d$') then
+    return stem
+  end
+
+  if stem:match('^%d%d%d%d%-W%d%d?$') then
+    return stem
+  end
+
+  if stem:match('^%d%d%d%d%-Q[1-4]$') then
+    return stem
+  end
+
+  if stem:match('^%d%d%d%d$') then
+    return stem
+  end
+
+  return nil
+end
+
+M.current_buffer_anchor = current_buffer_anchor
+
 function M.setup(opts)
   config.setup(opts)
 
@@ -161,7 +197,8 @@ function M.note(opts)
       templates = {}
     end
 
-    local parsed = commands.parse_note_fargs(opts.cmd and opts.cmd.fargs or {}, template_names(templates))
+    local parsed =
+      commands.parse_note_fargs(opts.cmd and opts.cmd.fargs or {}, template_names(templates))
 
     resolve_title(opts.title or parsed.title, visual, function(title, title_source)
       if not title then
@@ -211,8 +248,13 @@ function M.journal(opts)
         return
       end
 
+      local date = opts.date or parsed.date
+      if not date and parsed.offset then
+        date = current_buffer_anchor()
+      end
+
       cli.run_journal(name, {
-        date = opts.date or parsed.date,
+        date = date,
         offset = opts.offset or parsed.offset,
       }, function(run_err, path)
         if run_err then
