@@ -1,0 +1,4 @@
+/.luarc.json
+/tests/tmp
+
+/nvim.log

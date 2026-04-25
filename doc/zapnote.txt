@@ -1,0 +1,52 @@
+*zapnote.txt*  Thin wrapper around zn
+
+==============================================================================
+CONTENTS                                                     *zapnote-contents*
+
+1. Commands ................................................ |zapnote-commands|
+2. Config .................................................... |zapnote-config|
+
+==============================================================================
+COMMANDS                                                     *zapnote-commands*
+
+:ZnNote
+    Create or open regular note. Resolves title from:
+    1. explicit command args
+    2. visual selection
+    3. input prompt
+
+    Resolves template from:
+    1. explicit command arg
+    2. `zn list templates --json`
+    3. input prompt
+
+:ZnJournal
+    Create or open journal note. Resolves journal name from:
+    1. explicit command arg
+    2. `zn list journals --json`
+    3. input prompt
+
+    Passes `--date` and `--offset` through unchanged.
+
+==============================================================================
+CONFIG                                                         *zapnote-config*
+
+>
+    require('zapnote').setup({
+      zn_cmd = 'zn',
+      ui = {
+        select = nil,
+        input = nil,
+      },
+      link = {
+        enabled = true,
+        format = '[[%s]]',
+      },
+      open = {
+        cmd = 'edit',
+      },
+    })
+<
+
+vim:tw=78:ts=8:noet:ft=help:norl:
+
