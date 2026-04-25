@@ -1,6 +1,7 @@
 local cli = require('zapnote.cli')
 local commands = require('zapnote.commands')
 local config = require('zapnote.config')
+local journal_nav = require('zapnote.journal_nav')
 local link = require('zapnote.link')
 local open = require('zapnote.open')
 local selection = require('zapnote.selection')
@@ -194,6 +195,75 @@ local function current_buffer_anchor()
 end
 
 M.current_buffer_anchor = current_buffer_anchor
+
+---@return string
+local function journal_directory()
+  local current_path = vim.api.nvim_buf_get_name(0)
+  if current_path ~= '' then
+    return vim.fs.dirname(current_path)
+  end
+
+  return vim.uv.cwd()
+end
+
+---@param opts {cmd: ZapnoteCommandOpts, name?: string, date?: string, offset?: string}|nil
+function M.journal_nav(opts)
+  opts = opts or {}
+
+  local parsed, err = commands.parse_journal_fargs(opts.cmd and opts.cmd.fargs or {})
+  if not parsed then
+    notify(err, vim.log.levels.ERROR)
+    return
+  end
+
+  cli.list_journals(function(list_err, journals)
+    if list_err then
+      notify(list_err, vim.log.levels.ERROR)
+      return
+    end
+
+    resolve_journal_name(opts.name or parsed.name, journals, function(name)
+      if not name then
+        return
+      end
+
+      local journal
+      for _, entry in ipairs(journals or {}) do
+        if entry.name == name then
+          journal = entry
+          break
+        end
+      end
+
+      if not journal then
+        notify(string.format("unknown journal '%s'", name), vim.log.levels.ERROR)
+        return
+      end
+
+      local anchor = opts.date or parsed.date or current_buffer_anchor()
+      if not anchor then
+        notify('journal navigation needs current buffer date or --date', vim.log.levels.ERROR)
+        return
+      end
+
+      local offset = opts.offset or parsed.offset
+      local file_stem, nav_err = journal_nav.resolve_target(anchor, offset, journal.format)
+      if not file_stem then
+        notify(nav_err or string.format("can't resolve journal '%s'", name), vim.log.levels.ERROR)
+        return
+      end
+
+      local path = vim.fs.joinpath(journal_directory(), string.format('%s.md', file_stem))
+
+      if not vim.uv.fs_stat(path) then
+        notify(string.format("journal note not found: %s", path), vim.log.levels.INFO)
+        return
+      end
+
+      open_path(path)
+    end)
+  end)
+end
 
 ---@param opts Partial<ZapnoteConfig>|nil
 function M.setup(opts)

@@ -122,6 +122,17 @@ function M.register()
     range = true,
     desc = 'Create or open Zapnote journal',
   })
+
+  ---@param opts ZapnoteCommandOpts
+  vim.api.nvim_create_user_command('ZnJournalNav', function(opts)
+    require('zapnote').journal_nav({
+      cmd = opts,
+    })
+  end, {
+    nargs = '*',
+    range = true,
+    desc = 'Open existing Zapnote journal',
+  })
 end
 
 return M

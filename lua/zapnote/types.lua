@@ -43,6 +43,10 @@
 ---@field date string|nil
 ---@field offset string|nil
 
+---@class ZapnoteJournalNavArgs
+---@field offset string|nil
+---@field date string|nil
+
 ---@class ZapnoteVisualSelection
 ---@field bufnr integer
 ---@field mode string
@@ -55,4 +59,3 @@
 ---@class ZapnoteCommandOpts
 ---@field fargs string[]
 ---@field range integer
-

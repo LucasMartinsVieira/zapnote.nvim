@@ -1,0 +1,26 @@
+local t = require('tests.minitest')
+local journal_nav = require('zapnote.journal_nav')
+
+t.test('weekly offset goes back one ISO week', function()
+  local target, err = journal_nav.resolve_target('2026-W17', '-1 week', '%G-W%V')
+  t.eq(err, nil)
+  t.eq(target, '2026-W16')
+end)
+
+t.test('weekly offset goes forward one ISO week', function()
+  local target, err = journal_nav.resolve_target('2026-W17', '+1 week', '%G-W%V')
+  t.eq(err, nil)
+  t.eq(target, '2026-W18')
+end)
+
+t.test('quarter offset goes back one quarter', function()
+  local target, err = journal_nav.resolve_target('2026-Q2', '-1 quarter', '%Y-Q%Q')
+  t.eq(err, nil)
+  t.eq(target, '2026-Q1')
+end)
+
+t.test('quarter offset goes forward one quarter', function()
+  local target, err = journal_nav.resolve_target('2026-Q2', '+1 quarter', '%Y-Q%Q')
+  t.eq(err, nil)
+  t.eq(target, '2026-Q3')
+end)
