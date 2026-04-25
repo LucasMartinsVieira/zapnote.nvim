@@ -10,12 +10,16 @@ local M = {}
 
 local registered = false
 
+---@param message string
+---@param level integer|nil
 local function notify(message, level)
   vim.notify(message, level or vim.log.levels.INFO, {
     title = 'zapnote.nvim',
   })
 end
 
+---@param templates ZapnoteTemplateEntry[]
+---@return string[]
 local function template_names(templates)
   local names = {}
   for _, template in ipairs(templates or {}) do
@@ -24,6 +28,8 @@ local function template_names(templates)
   return names
 end
 
+---@param path string
+---@return string|nil
 local function open_path(path)
   local normalized, err = open.edit(path)
   if not normalized then
@@ -34,6 +40,8 @@ local function open_path(path)
   return normalized
 end
 
+---@param cmd_opts ZapnoteCommandOpts|nil
+---@return ZapnoteVisualSelection|nil
 local function resolve_visual_selection(cmd_opts)
   if not cmd_opts or cmd_opts.range == 0 then
     return nil
@@ -50,6 +58,9 @@ local function resolve_visual_selection(cmd_opts)
   return visual
 end
 
+---@param explicit_title string|nil
+---@param visual ZapnoteVisualSelection|nil
+---@param on_done fun(title: string|nil, source: 'arg'|'selection'|'prompt'|nil)
 local function resolve_title(explicit_title, visual, on_done)
   if explicit_title and explicit_title ~= '' then
     on_done(explicit_title, 'arg')
@@ -75,6 +86,9 @@ local function resolve_title(explicit_title, visual, on_done)
   end)
 end
 
+---@param explicit_template string|nil
+---@param templates ZapnoteTemplateEntry[]
+---@param on_done fun(template: string|nil)
 local function resolve_template(explicit_template, templates, on_done)
   if explicit_template and explicit_template ~= '' then
     on_done(explicit_template)
@@ -108,6 +122,9 @@ local function resolve_template(explicit_template, templates, on_done)
   end)
 end
 
+---@param explicit_name string|nil
+---@param journals ZapnoteJournalEntry[]
+---@param on_done fun(name: string|nil)
 local function resolve_journal_name(explicit_name, journals, on_done)
   if explicit_name and explicit_name ~= '' then
     on_done(explicit_name)
@@ -141,6 +158,7 @@ local function resolve_journal_name(explicit_name, journals, on_done)
   end)
 end
 
+---@return string|nil
 local function current_buffer_anchor()
   local path = vim.api.nvim_buf_get_name(0)
   if path == '' then
@@ -177,6 +195,7 @@ end
 
 M.current_buffer_anchor = current_buffer_anchor
 
+---@param opts Partial<ZapnoteConfig>|nil
 function M.setup(opts)
   config.setup(opts)
 
@@ -186,6 +205,7 @@ function M.setup(opts)
   end
 end
 
+---@param opts {cmd: ZapnoteCommandOpts, title?: string, template?: string}|nil
 function M.note(opts)
   opts = opts or {}
 
@@ -228,6 +248,7 @@ function M.note(opts)
   end)
 end
 
+---@param opts {cmd: ZapnoteCommandOpts, name?: string, date?: string, offset?: string}|nil
 function M.journal(opts)
   opts = opts or {}
 

@@ -2,6 +2,9 @@ local config = require('zapnote.config')
 
 local M = {}
 
+---@param default_fn function
+---@param configured function|nil
+---@return function
 local function adapter_or(default_fn, configured)
   if type(configured) == 'function' then
     return configured
@@ -10,6 +13,8 @@ local function adapter_or(default_fn, configured)
   return default_fn
 end
 
+---@param opts table
+---@param on_done fun(value: string|nil)
 function M.input(opts, on_done)
   local input = adapter_or(function(input_opts, callback)
     vim.ui.input(input_opts, callback)
@@ -20,6 +25,9 @@ function M.input(opts, on_done)
   end)
 end
 
+---@param items any[]
+---@param opts table
+---@param on_done fun(choice: any|nil)
 function M.select(items, opts, on_done)
   local select = adapter_or(function(select_items, select_opts, callback)
     vim.ui.select(select_items, select_opts, callback)
@@ -36,6 +44,9 @@ function M.select(items, opts, on_done)
   return true
 end
 
+---@param kind string
+---@param items {name:string}[]
+---@param on_done fun(choice: {name:string}|nil)
 function M.select_name(kind, items, on_done)
   local ok, err = M.select(items, {
     prompt = string.format('Select %s', kind),
@@ -65,4 +76,3 @@ function M.select_name(kind, items, on_done)
 end
 
 return M
-

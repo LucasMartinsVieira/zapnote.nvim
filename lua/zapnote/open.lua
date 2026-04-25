@@ -2,6 +2,8 @@ local config = require('zapnote.config')
 
 local M = {}
 
+---@param path string|nil
+---@return string|nil
 function M.normalize_path(path)
   if not path or path == '' then
     return nil
@@ -18,6 +20,8 @@ function M.normalize_path(path)
   return vim.fn.fnamemodify(path, ':p')
 end
 
+---@param path string
+---@return string|nil, string|nil
 function M.edit(path)
   local normalized = M.normalize_path(path)
   if not normalized then
@@ -30,4 +34,3 @@ function M.edit(path)
 end
 
 return M
-

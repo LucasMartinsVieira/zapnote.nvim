@@ -1,15 +1,23 @@
 local M = {}
 
+---@param message string
+---@param level integer|nil
 local function notify(message, level)
   vim.notify(message, level or vim.log.levels.INFO, {
     title = 'zapnote.nvim',
   })
 end
 
+---@param title string
+---@param fmt string|nil
+---@return string
 function M.render_link(title, fmt)
   return string.format(fmt or '[[%s]]', title)
 end
 
+---@param selection ZapnoteVisualSelection|nil
+---@param replacement string
+---@return boolean|nil, string|nil
 function M.replace_selection(selection, replacement)
   if not selection then
     return nil, 'missing selection'
@@ -31,6 +39,10 @@ function M.replace_selection(selection, replacement)
   return true
 end
 
+---@param selection ZapnoteVisualSelection|nil
+---@param title string
+---@param fmt string|nil
+---@return boolean
 function M.replace_with_link(selection, title, fmt)
   local link = M.render_link(title, fmt)
   local ok, err = M.replace_selection(selection, link)
@@ -44,4 +56,3 @@ function M.replace_with_link(selection, title, fmt)
 end
 
 return M
-

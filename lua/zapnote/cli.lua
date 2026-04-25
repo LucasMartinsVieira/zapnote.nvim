@@ -2,12 +2,21 @@ local config = require('zapnote.config')
 
 local M = {}
 
+---@class ZapnoteCliResult
+---@field ok boolean
+---@field code integer|nil
+---@field stdout string
+---@field stderr string
+---@field error string|nil
+
 local function notify(message, level)
   vim.notify(message, level or vim.log.levels.INFO, {
     title = 'zapnote.nvim',
   })
 end
 
+---@param args string[]
+---@param on_done fun(result: ZapnoteCliResult)
 local function system(args, on_done)
   if not vim.system then
     on_done({
@@ -41,6 +50,8 @@ local function system(args, on_done)
   end))
 end
 
+---@param stdout string|nil
+---@return string|nil, string|nil
 function M.extract_path(stdout)
   local path = vim.trim(stdout or '')
   if path == '' then
@@ -50,6 +61,7 @@ function M.extract_path(stdout)
   return path
 end
 
+---@param on_done fun(err: string|nil, templates: ZapnoteTemplateEntry[]|nil)
 function M.list_templates(on_done)
   local cmd = config.get().zn_cmd or 'zn'
   system({ cmd, 'list', 'templates', '--json' }, function(result)
@@ -68,6 +80,7 @@ function M.list_templates(on_done)
   end)
 end
 
+---@param on_done fun(err: string|nil, journals: ZapnoteJournalEntry[]|nil)
 function M.list_journals(on_done)
   local cmd = config.get().zn_cmd or 'zn'
   system({ cmd, 'list', 'journals', '--json' }, function(result)
@@ -86,6 +99,9 @@ function M.list_journals(on_done)
   end)
 end
 
+---@param template string
+---@param title string
+---@param on_done fun(err: string|nil, path: string|nil)
 function M.run_note(template, title, on_done)
   local cmd = config.get().zn_cmd or 'zn'
   system({ cmd, '--no-editor', 'note', template, title }, function(result)
@@ -106,6 +122,9 @@ function M.run_note(template, title, on_done)
   end)
 end
 
+---@param name string
+---@param opts ZapnoteJournalArgs|nil
+---@param on_done fun(err: string|nil, path: string|nil)
 function M.run_journal(name, opts, on_done)
   local cmd = config.get().zn_cmd or 'zn'
   local args = { cmd, '--no-editor', 'journal', name }
@@ -143,4 +162,3 @@ function M.run_journal(name, opts, on_done)
 end
 
 return M
-

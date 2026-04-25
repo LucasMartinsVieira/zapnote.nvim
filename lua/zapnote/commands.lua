@@ -1,5 +1,8 @@
 local M = {}
 
+---@param values string[]|nil
+---@param target string
+---@return boolean
 local function contains(values, target)
   for _, value in ipairs(values or {}) do
     if value == target then
@@ -10,6 +13,10 @@ local function contains(values, target)
   return false
 end
 
+---@param fargs string[]
+---@param templates string[]|nil
+---@return ZapnoteNoteParseResult
+---@return ZapnoteNoteParseResult
 function M.parse_note_fargs(fargs, templates)
   if #fargs == 0 then
     return {
@@ -38,6 +45,9 @@ function M.parse_note_fargs(fargs, templates)
   }
 end
 
+---@param fargs string[]
+---@return ZapnoteJournalParseResult|nil, string|nil
+---@return ZapnoteJournalParseResult|nil, string|nil
 function M.parse_journal_fargs(fargs)
   local parsed = {
     name = nil,
@@ -91,6 +101,7 @@ function M.parse_journal_fargs(fargs)
 end
 
 function M.register()
+  ---@param opts ZapnoteCommandOpts
   vim.api.nvim_create_user_command('ZnNote', function(opts)
     require('zapnote').note({
       cmd = opts,
@@ -101,6 +112,7 @@ function M.register()
     desc = 'Create or open Zapnote note',
   })
 
+  ---@param opts ZapnoteCommandOpts
   vim.api.nvim_create_user_command('ZnJournal', function(opts)
     require('zapnote').journal({
       cmd = opts,
@@ -113,4 +125,3 @@ function M.register()
 end
 
 return M
-
