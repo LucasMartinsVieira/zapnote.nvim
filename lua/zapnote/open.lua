@@ -20,12 +20,21 @@ function M.normalize_path(path)
   return vim.fn.fnamemodify(path, ':p')
 end
 
+---@return string|nil
+local function current_buffer_path()
+  return M.normalize_path(vim.api.nvim_buf_get_name(0))
+end
+
 ---@param path string
 ---@return string|nil, string|nil
 function M.edit(path)
   local normalized = M.normalize_path(path)
   if not normalized then
     return nil, 'missing file path from zn output'
+  end
+
+  if normalized == current_buffer_path() then
+    return normalized
   end
 
   local open_cmd = config.get().open.cmd or 'edit'
