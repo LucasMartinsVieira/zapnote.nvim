@@ -4,7 +4,7 @@ local open = require('zapnote.open')
 t.test('edit skips reopening current buffer path', function()
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_set_current_buf(bufnr)
-  vim.api.nvim_buf_set_name(bufnr, '/tmp/2026-05-15.md')
+  vim.api.nvim_buf_set_name(bufnr, '/tmp/zapnote-open-current.md')
 
   local calls = {}
   local original_cmd = vim.cmd
@@ -13,8 +13,8 @@ t.test('edit skips reopening current buffer path', function()
   end
 
   local ok, err = pcall(function()
-    local path = open.edit('/tmp/2026-05-15.md')
-    t.eq(path, '/tmp/2026-05-15.md')
+    local path = open.edit('/tmp/zapnote-open-current.md')
+    t.eq(path, '/tmp/zapnote-open-current.md')
   end)
 
   vim.cmd = original_cmd
@@ -29,7 +29,7 @@ end)
 t.test('edit opens a different path', function()
   local bufnr = vim.api.nvim_create_buf(false, true)
   vim.api.nvim_set_current_buf(bufnr)
-  vim.api.nvim_buf_set_name(bufnr, '/tmp/2026-05-15.md')
+  vim.api.nvim_buf_set_name(bufnr, '/tmp/zapnote-open-source.md')
 
   local calls = {}
   local original_cmd = vim.cmd
@@ -38,8 +38,8 @@ t.test('edit opens a different path', function()
   end
 
   local ok, err = pcall(function()
-    local path = open.edit('/tmp/2026-05-16.md')
-    t.eq(path, '/tmp/2026-05-16.md')
+    local path = open.edit('/tmp/zapnote-open-target.md')
+    t.eq(path, '/tmp/zapnote-open-target.md')
   end)
 
   vim.cmd = original_cmd
@@ -48,5 +48,5 @@ t.test('edit opens a different path', function()
     error(err)
   end
 
-  t.eq(calls, { 'edit /tmp/2026-05-16.md' })
+  t.eq(calls, { 'edit /tmp/zapnote-open-target.md' })
 end)

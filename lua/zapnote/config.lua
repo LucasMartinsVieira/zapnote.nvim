@@ -5,6 +5,7 @@ local M = {}
 local defaults = {
   zn_cmd = 'zn',
   ui = {
+    picker = 'native',
     select = nil,
     input = nil,
   },

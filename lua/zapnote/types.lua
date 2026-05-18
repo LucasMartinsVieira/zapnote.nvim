@@ -2,8 +2,10 @@
 
 ---@alias ZapnoteSelectFn fun(items: any[], opts: table, on_choice: fun(choice: any|nil)): any
 ---@alias ZapnoteInputFn fun(opts: table, on_done: fun(value: string|nil)): any
+---@alias ZapnotePickerBackend 'native'|'telescope'|'snacks'
 
 ---@class ZapnoteUiConfig
+---@field picker ZapnotePickerBackend|nil
 ---@field select ZapnoteSelectFn|nil
 ---@field input ZapnoteInputFn|nil
 

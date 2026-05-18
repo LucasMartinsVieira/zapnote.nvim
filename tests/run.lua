@@ -9,6 +9,8 @@ function M.run()
   require('tests.selection_spec')
   require('tests.link_spec')
   require('tests.cli_spec')
+  require('tests.open_spec')
+  require('tests.ui_spec')
 
   require('tests.minitest').run()
   print('tests: ok')
